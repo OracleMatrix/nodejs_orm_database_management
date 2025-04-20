@@ -1,6 +1,6 @@
 # 🚀 ORM Database Management API
 
-A professional and robust RESTful API service for managing users and posts, built with Node.js, Express, and Sequelize ORM. This project provides secure user authentication, comprehensive user and post management, and follows best practices for API development.
+A professional and robust RESTful API service for managing users, posts, comments, and likes, built with Node.js, Express, and Sequelize ORM. This project provides secure user authentication, comprehensive user, post, comment, and like management, and follows best practices for API development.
 
 ---
 
@@ -19,9 +19,17 @@ A professional and robust RESTful API service for managing users and posts, buil
   - Update and delete posts
   - Retrieve posts by post ID or by user
   - List all posts with associated user information
+- 💬 **Comment Management**
+  - Create comments on posts
+  - Retrieve comments by post ID
+- 👍 **Like Management**
+  - Add likes to posts
+  - Retrieve all likes
+  - Retrieve likes by post ID
+  - Delete likes by ID
 - 🗄️ **Database & ORM**
   - Sequelize ORM for easy database management
-  - Defined associations: One-to-many relationship between users and posts
+  - Defined associations: One-to-many relationships between users, posts, comments, and likes
 - ⚙️ **Server & Middleware**
   - Express.js server setup
   - Middleware for security (Helmet) and logging (Morgan)
@@ -32,12 +40,14 @@ A professional and robust RESTful API service for managing users and posts, buil
 ## 🚀 Getting Started
 
 1. Clone the repository:
+
    ```bash
    git clone <repository-url>
    cd orm_database_management
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
@@ -45,6 +55,7 @@ A professional and robust RESTful API service for managing users and posts, buil
 3. Set up your `.env` file with necessary environment variables (e.g., `PORT`, `JWT_SECRET_KEY`).
 
 4. Run the server:
+
    ```bash
    npm start
    ```
@@ -52,12 +63,15 @@ A professional and robust RESTful API service for managing users and posts, buil
 5. Access the API endpoints under:
    - `/api/users` for user-related operations
    - `/api/posts` for post-related operations
+   - `/api/comments` for comment-related operations
+   - `/api/likes` for like-related operations
 
 ---
 
 ## 📚 API Endpoints Overview
 
 ### Users
+
 - `POST /api/users/register` - Register a new user
 - `POST /api/users/login` - User login
 - `PUT /api/users/update/:id` - Update user by ID
@@ -68,12 +82,25 @@ A professional and robust RESTful API service for managing users and posts, buil
 - `GET /api/users/getUserByName/:name` - Get user by name
 
 ### Posts
+
 - `POST /api/posts/create` - Create a new post
 - `GET /api/posts/getUserPosts/:userId` - Get posts by user ID
 - `GET /api/posts/getPostById/:postId` - Get post by post ID
 - `PUT /api/posts/update/:postId` - Update post by post ID
 - `DELETE /api/posts/delete/:postId` - Delete post by post ID
 - `GET /api/posts/` - Get all posts
+
+### Comments
+
+- `POST /api/comments/create` - Create a new comment on a post
+- `GET /api/comments/post/:postId` - Get all comments for a specific post
+
+### Likes
+
+- `GET /api/likes` - Get all likes
+- `GET /api/likes/post/:id` - Get all likes for a specific post
+- `POST /api/likes` - Add a like to a post
+- `DELETE /api/likes/delete/:id` - Delete a like by ID
 
 ---
 
@@ -100,7 +127,8 @@ Contributions are welcome! Please fork the repository and submit a pull request.
 
 ## 📞 Contact
 
-For any questions or support, please contact the project maintainer.
+For any questions or support, please contact with
+[My Email address](mailto:ehsanmohamadipoor@gmail.com)
 
 ---
 
