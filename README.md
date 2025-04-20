@@ -42,7 +42,7 @@ A professional and robust RESTful API service for managing users, posts, comment
 1. Clone the repository:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/OracleMatrix/nodejs_orm_database_management
    cd orm_database_management
    ```
 
