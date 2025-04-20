@@ -22,6 +22,10 @@ app.use("/api/likes", likesRoute);
 
 app.get("/", (req, res) => res.send("Hello World!"));
 
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger");
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 const db = require("./models");
 db.users.hasMany(db.posts, {
   foreignKey: "userId",
