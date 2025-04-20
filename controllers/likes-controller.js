@@ -85,31 +85,17 @@ const getPostLikes = async (req, res) => {
   }
 };
 
-const getLikes = async (req, res) => {
-  const schema = Joi.object({
-    userId: Joi.number().required(),
-    postId: Joi.number().required(),
-  });
-  const { error } = schema.validate(req.body);
-  if (error) {
-    return res.status(400).json({ message: error.details[0].message });
-  }
-  const postId = req.body.postId;
-  if (!postId) {
-    return res.status(400).json({ message: "Post ID is required" });
-  }
-  const userId = req.body.userId;
-  if (!userId) {
-    return res.status(400).json({ message: "User ID is required" });
-  }
-
+const getAllLikes = async (req, res) => {
   try {
     const likes = await Likes.findAll({
-      where: { postId },
       include: [
         {
           model: Users,
           attributes: ["id", "name", "email"],
+        },
+        {
+          model: Posts,
+          attributes: ["id", "title", "content"],
         },
       ],
     });
@@ -120,6 +106,7 @@ const getLikes = async (req, res) => {
         userId: like.userId,
         postId: like.postId,
         user: _.pick(like.user, ["id", "name", "email"]),
+        post: _.pick(like.post, ["id", "title", "content"]),
       })),
     });
   } catch (error) {
@@ -148,6 +135,6 @@ const deleteLike = async (req, res) => {
 module.exports = {
   createLike,
   getPostLikes,
-  getLikes,
+  getAllLikes,
   deleteLike,
 };

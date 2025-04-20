@@ -4,7 +4,7 @@ const db = require("../models");
 
 const likesController = require("../controllers/likes-controller");
 
-router.get("/", likesController.getLikes);
+router.get("/", likesController.getAllLikes);
 router.get("/post/:id", likesController.getPostLikes);
 router.post("/", likesController.createLike);
 router.delete("/delete/:id", likesController.deleteLike);
