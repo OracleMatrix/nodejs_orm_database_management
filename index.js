@@ -25,6 +25,10 @@ db.posts.belongsTo(db.users, {
 const postsRoute = require('./routes/posts-route');
 app.use('/api/posts', postsRoute);
 db.sequelize.sync().then((req) => {
+    console.log('Database connected...');
     app.listen(port, () => console.log(`Server listening on port ${port}`))
-})
+}).catch((err) => {
+    console.log('Error connecting to database: ', err);
+}
+);
 
