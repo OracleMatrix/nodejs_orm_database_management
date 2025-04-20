@@ -1,0 +1,88 @@
+const jwt = require("jsonwebtoken");
+const Joi = require("joi");
+const _ = require("lodash");
+const db = require("../models");
+
+const CommentModel = db.comments;
+const PostModel = db.posts;
+const UserModel = db.users;
+
+const createComment = async (req, res) => {
+  try {
+    const content = req.body.content;
+    const postId = req.body.postId;
+    const userId = req.body.userId;
+    const user = await UserModel.findByPk(userId);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    const post = await PostModel.findByPk(postId);
+    if (!post) {
+      return res.status(404).send({ message: "Post not found" });
+    }
+    const schema = Joi.object({
+      content: Joi.string().required(),
+      postId: Joi.number().required(),
+      userId: Joi.number().required(),
+    });
+    const { error } = schema.validate(req.body);
+    if (error)
+      return res.status(400).send({ message: error.details[0].message });
+    const comment = await CommentModel.create({
+      content,
+      userId,
+      postId,
+    }).catch((err) => {
+      return res.status(400).send({ message: err });
+    });
+    const commentData = await CommentModel.findOne({
+      where: { id: comment.id },
+      include: [
+        {
+          model: UserModel,
+          attributes: ["id", "name", "email"],
+        },
+        {
+          model: PostModel,
+          attributes: ["id", "title", "content"],
+        },
+      ],
+    });
+    res.status(201).send({
+      message: "Comment created successfully",
+      comment: commentData,
+    });
+  } catch (error) {
+    res.status(500).send({ message: `Internal Server Error\nError: ${error}` });
+  }
+};
+
+const getCommentsByPostId = async (req, res) => {
+  try {
+    const postId = req.params.postId;
+    const comments = await CommentModel.findAll({
+      where: { postId },
+      include: [
+        {
+          model: UserModel,
+          attributes: ["id", "name", "email"],
+        },
+        {
+          model: PostModel,
+          attributes: ["id", "title", "content"],
+        },
+      ],
+    });
+    return res.status(200).send({
+      message: "Comments retrieved successfully",
+      comments,
+    });
+  } catch (error) {
+    res.status(500).send({ message: `Internal Server Error\nError: ${error}` });
+  }
+};
+
+module.exports = {
+  createComment,
+  getCommentsByPostId,
+};
