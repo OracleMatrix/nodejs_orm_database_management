@@ -60,13 +60,14 @@ const createComment = async (req, res) => {
 const getCommentsByPostId = async (req, res) => {
   try {
     const postId = req.params.postId;
-    if (!postId) return res.status(400).send({ message: `Post ID is required` });
+    if (!postId)
+      return res.status(400).send({ message: `Post ID is required` });
 
     const postExists = await PostModel.findOne({
-        where: { id: postId },
-        });
-        if (!postExists) return res.status(400).send({ message: `Post not found` });
-    
+      where: { id: postId },
+    });
+    if (!postExists) return res.status(400).send({ message: `Post not found` });
+
     const comments = await CommentModel.findAll({
       where: { postId },
       include: [
@@ -82,6 +83,31 @@ const getCommentsByPostId = async (req, res) => {
     });
     return res.status(200).send({
       message: "Comments retrieved successfully",
+      numberOfComments: comments.length,
+      comments,
+    });
+  } catch (error) {
+    res.status(500).send({ message: `Internal Server Error\nError: ${error}` });
+  }
+};
+
+const getAllComments = async (req, res) => {
+  try {
+    const comments = await CommentModel.findAll({
+      include: [
+        {
+          model: UserModel,
+          attributes: ["id", "name", "email"],
+        },
+        {
+          model: PostModel,
+          attributes: ["id", "title", "content"],
+        },
+      ],
+    });
+    return res.status(200).send({
+      message: "Comments retrieved successfully",
+      numberOfComments: comments.length,
       comments,
     });
   } catch (error) {
@@ -92,4 +118,5 @@ const getCommentsByPostId = async (req, res) => {
 module.exports = {
   createComment,
   getCommentsByPostId,
+  getAllComments,
 };

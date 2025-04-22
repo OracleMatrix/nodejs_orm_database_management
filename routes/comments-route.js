@@ -69,4 +69,18 @@ router.post("/create", commentsController.createComment);
  */
 router.get("/post/:postId", commentsController.getCommentsByPostId);
 
+/**
+ * @swagger
+ * /api/comments/
+ *  get:
+ *  summary: Get all comments
+ * tags: [Comments]
+ * responses:
+ * 200:
+ * description: List of all comments
+ * 401:
+ * description: Unauthorized
+ */
+router.get("/", commentsController.getAllComments);
+
 module.exports = router;
