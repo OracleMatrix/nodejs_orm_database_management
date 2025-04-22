@@ -61,6 +61,12 @@ const getCommentsByPostId = async (req, res) => {
   try {
     const postId = req.params.postId;
     if (!postId) return res.status(400).send({ message: `Post ID is required` });
+
+    const postExists = await PostModel.findOne({
+        where: { id: postId },
+        });
+        if (!postExists) return res.status(400).send({ message: `Post not found` });
+    
     const comments = await CommentModel.findAll({
       where: { postId },
       include: [
