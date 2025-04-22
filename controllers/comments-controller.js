@@ -60,6 +60,7 @@ const createComment = async (req, res) => {
 const getCommentsByPostId = async (req, res) => {
   try {
     const postId = req.params.postId;
+    if (!postId) return res.status(400).send({ message: `Post ID is required` });
     const comments = await CommentModel.findAll({
       where: { postId },
       include: [
