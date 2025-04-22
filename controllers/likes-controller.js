@@ -73,6 +73,7 @@ const getPostLikes = async (req, res) => {
     });
     res.status(200).json({
       message: "Likes retrieved successfully",
+      totalLikes: likes.length,
       likes: likes.map((like) => ({
         id: like.id,
         userId: like.userId,
@@ -101,6 +102,7 @@ const getAllLikes = async (req, res) => {
     });
     res.status(200).json({
       message: "Likes retrieved successfully",
+      totalLikes: likes.length,
       likes: likes.map((like) => ({
         id: like.id,
         userId: like.userId,
