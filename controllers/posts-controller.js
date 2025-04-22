@@ -94,10 +94,28 @@ const getPostById = async (req, res) => {
       where: {
         id: postId,
       },
-      include: {
-        model: UserModel,
-        attributes: ["id", "name", "email"],
-      },
+      include: [
+        {
+          model: UserModel,
+          attributes: ["id", "name", "email"],
+        },
+        {
+          model: db.comments,
+          attributes: ["id", "content"],
+          include: {
+            model: UserModel,
+            attributes: ["id", "name", "email"],
+          },
+        },
+        {
+          model: db.likes,
+          attributes: ["id"],
+          include: {
+            model: UserModel,
+            attributes: ["id", "name", "email"],
+          },
+        },
+      ],
     });
 
     if (!post) return res.status(404).send({ message: "Post not found" });
@@ -181,10 +199,28 @@ const updatePost = async (req, res) => {
 const getAllPosts = async (req, res) => {
   try {
     const posts = await PostModel.findAll({
-      include: {
-        model: UserModel,
-        attributes: ["id", "name", "email"],
-      },
+      include: [
+        {
+          model: UserModel,
+          attributes: ["id", "name", "email"],
+        },
+        {
+          model: db.comments,
+          attributes: ["id", "content"],
+          include: {
+            model: UserModel,
+            attributes: ["id", "name", "email"],
+          },
+        },
+        {
+          model: db.likes,
+          attributes: ["id"],
+          include: {
+            model: UserModel,
+            attributes: ["id", "name", "email"],
+          },
+        },
+      ],
     });
 
     res.status(200).send({

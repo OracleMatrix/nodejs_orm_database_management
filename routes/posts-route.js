@@ -62,7 +62,7 @@ router.post("/create", postsController.createPost);
  *       404:
  *         description: User or posts not found
  */
-router.get("/getUserPosts/:userId", postsController.getUserPosts);
+router.get("/user/:userId", postsController.getUserPosts);
 
 /**
  * @swagger
@@ -83,7 +83,7 @@ router.get("/getUserPosts/:userId", postsController.getUserPosts);
  *       404:
  *         description: Post not found
  */
-router.get("/getPostById/:postId", postsController.getPostById);
+router.get("/post/:postId", postsController.getPostById);
 
 /**
  * @swagger
