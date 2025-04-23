@@ -70,6 +70,7 @@ const getCommentsByPostId = async (req, res) => {
 
     const comments = await CommentModel.findAll({
       where: { postId },
+      order: [["createdAt", "DESC"]],
       include: [
         {
           model: UserModel,
@@ -94,6 +95,7 @@ const getCommentsByPostId = async (req, res) => {
 const getAllComments = async (req, res) => {
   try {
     const comments = await CommentModel.findAll({
+      order: [["createdAt", "DESC"]],
       include: [
         {
           model: UserModel,

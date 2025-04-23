@@ -199,6 +199,7 @@ const updatePost = async (req, res) => {
 const getAllPosts = async (req, res) => {
   try {
     const posts = await PostModel.findAll({
+      order: [["createdAt", "DESC"]],
       include: [
         {
           model: UserModel,
