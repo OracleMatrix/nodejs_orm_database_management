@@ -60,7 +60,13 @@ A professional and robust RESTful API service for managing users, posts, comment
    npm start
    ```
 
-5. Access the API endpoints under:
+5. For development with automatic reloads, use:
+
+   ```bash
+   npm run dev
+   ```
+
+6. Access the API endpoints under:
    - `/api/users` for user-related operations
    - `/api/posts` for post-related operations
    - `/api/comments` for comment-related operations
@@ -116,6 +122,23 @@ A professional and robust RESTful API service for managing users, posts, comment
 - Helmet for security headers
 - Morgan for HTTP request logging
 - dotenv for environment variable management
+- nodemon for development server auto-reloading
+- lodash for utility functions
+- fs for file system operations
+- path for file and directory path utilities
+- swagger-jsdoc and swagger-ui-express for API documentation
+
+---
+
+## 📖 API Documentation
+
+API documentation is available via Swagger UI. Once the server is running, access the docs at:
+
+```
+http://localhost:<PORT>/api-docs
+```
+
+Replace `<PORT>` with your configured port (default 3000).
 
 ---
 
