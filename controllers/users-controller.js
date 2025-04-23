@@ -83,6 +83,10 @@ const loginUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
+    const userId = req.params.id;
+    if (!userId)
+      return res.status(400).send({ message: "User ID is required" });
+
     const schema = Joi.object({
       name: Joi.string(),
       email: Joi.string().email(),
@@ -96,8 +100,18 @@ const updateUser = async (req, res) => {
     const user = await UserModel.findByPk(req.params.id);
     if (!user) return res.status(400).send({ message: "User not found" });
 
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
     // Update user
-    await UserModel.update(req.body, { where: { id: req.params.id } });
+    await UserModel.update(
+      {
+        name: req.body.name,
+        email: req.body.email,
+        password: hashedPassword,
+      },
+      { where: { id: req.params.id } }
+    );
     res.status(200).send({ message: "User updated successfully" });
   } catch (error) {
     res.status(500).send({ message: `Internal Server Error\nError: ${error}` });
@@ -123,7 +137,7 @@ const getAllUsers = async (req, res) => {
     const users = await UserModel.findAll();
     res.status(200).send(
       users.map((user) => {
-        return _.pick(user, ["id", "name", "email"]);
+        return _.pick(user, ["id", "name", "email", "password"]);
       })
     );
   } catch (error) {
@@ -134,7 +148,7 @@ const getUserById = async (req, res) => {
   try {
     const user = await UserModel.findByPk(req.params.id);
     if (!user) return res.status(400).send({ message: "User not found" });
-    res.status(200).send(_.pick(user, ["id", "name", "email"]));
+    res.status(200).send(_.pick(user, ["id", "name", "email", "password"]));
   } catch (error) {
     res.status(500).send({ message: `Internal Server Error\nError: ${error}` });
   }
