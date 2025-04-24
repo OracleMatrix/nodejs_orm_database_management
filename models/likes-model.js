@@ -7,6 +7,8 @@ module.exports = (sequelize, DataTypes) => {
         model: "users",
         key: "id",
       },
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
     },
     postId: {
       type: DataTypes.INTEGER,
@@ -15,6 +17,8 @@ module.exports = (sequelize, DataTypes) => {
         model: "posts",
         key: "id",
       },
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
     },
   });
   return LikesModel;

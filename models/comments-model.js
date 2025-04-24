@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
         key: "id",
       },
       allowNull: false,
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
     },
     postId: {
       type: DataTypes.INTEGER,
@@ -18,6 +20,8 @@ module.exports = (sequelize, DataTypes) => {
         model: "posts",
         key: "id",
       },
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
       allowNull: false,
     },
   });
