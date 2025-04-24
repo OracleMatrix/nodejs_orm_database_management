@@ -5,7 +5,11 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const cors = require("cors");
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(helmet());
