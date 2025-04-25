@@ -6,8 +6,8 @@ const db = require("../models");
 const UserModel = db.users;
 const PostModel = db.posts;
 
-const postController = {
-  createPost: async (req, res) => {
+class PostController {
+  async createPost(req, res) {
     try {
       const schema = Joi.object({
         title: Joi.string().required(),
@@ -41,13 +41,11 @@ const postController = {
         post: post,
       });
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
+  }
 
-  getUserPosts: async (req, res) => {
+  async getUserPosts(req, res) {
     try {
       const schema = Joi.object({
         userId: Joi.number().required(),
@@ -82,13 +80,11 @@ const postController = {
         posts: posts,
       });
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
+  }
 
-  getPostById: async (req, res) => {
+  async getPostById(req, res) {
     try {
       const postId = req.params.postId;
       if (!postId)
@@ -109,7 +105,7 @@ const postController = {
             attributes: ["id", "content"],
             include: {
               model: UserModel,
-              attributes: ["id", "name", "email"],
+              attributes: { exclude: ["password"] },
             },
           },
           {
@@ -117,7 +113,7 @@ const postController = {
             attributes: ["id"],
             include: {
               model: UserModel,
-              attributes: ["id", "name", "email"],
+              attributes: { exclude: ["password"] },
             },
           },
         ],
@@ -130,13 +126,11 @@ const postController = {
         post: post,
       });
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
+  }
 
-  deletePost: async (req, res) => {
+  async deletePost(req, res) {
     try {
       const postId = req.params.postId;
       if (!postId)
@@ -162,13 +156,11 @@ const postController = {
         message: "Post deleted successfully",
       });
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
+  }
 
-  updatePost: async (req, res) => {
+  async updatePost(req, res) {
     try {
       const postId = req.params.postId;
       if (!postId)
@@ -202,27 +194,25 @@ const postController = {
         message: "Post updated successfully",
       });
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
+  }
 
-  getAllPosts: async (req, res) => {
+  async getAllPosts(req, res) {
     try {
       const posts = await PostModel.findAll({
         order: [["createdAt", "DESC"]],
         include: [
           {
             model: UserModel,
-            attributes: ["id", "name", "email"],
+            attributes: { exclude: ["password"] },
           },
           {
             model: db.comments,
             attributes: ["id", "content"],
             include: {
               model: UserModel,
-              attributes: ["id", "name", "email"],
+              attributes: { exclude: ["password"] },
             },
           },
           {
@@ -230,7 +220,7 @@ const postController = {
             attributes: ["id"],
             include: {
               model: UserModel,
-              attributes: ["id", "name", "email"],
+              attributes: { exclude: ["password"] },
             },
           },
         ],
@@ -242,11 +232,9 @@ const postController = {
         posts: posts,
       });
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
-};
+  }
+}
 
-module.exports = postController;
+module.exports = new PostController();
