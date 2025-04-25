@@ -47,45 +47,4 @@ Object.keys(db).forEach((modelName) => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-// ارتباط کاربر با پست‌ها
-db.users.hasMany(db.posts, {
-  foreignKey: "userId",
-});
-
-db.posts.belongsTo(db.users, {
-  foreignKey: "userId",
-});
-
-// ارتباط کاربر با کامنت‌ها
-db.users.hasMany(db.comments, {
-  foreignKey: "userId",
-});
-db.comments.belongsTo(db.users, {
-  foreignKey: "userId",
-});
-
-// ارتباط پست با کامنت‌ها
-db.posts.hasMany(db.comments, {
-  foreignKey: "postId",
-});
-db.comments.belongsTo(db.posts, {
-  foreignKey: "postId",
-});
-
-// ارتباط کاربر با لایک‌ها
-db.users.hasMany(db.likes, {
-  foreignKey: "userId",
-});
-
-db.likes.belongsTo(db.users, {
-  foreignKey: "userId",
-});
-// ارتباط پست با لایک‌ها
-db.posts.hasMany(db.likes, {
-  foreignKey: "postId",
-});
-db.likes.belongsTo(db.posts, {
-  foreignKey: "postId",
-});
-
 module.exports = db;
