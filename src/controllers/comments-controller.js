@@ -10,9 +10,15 @@ const UserModel = db.users;
 const commentController = {
   createComment: async (req, res) => {
     try {
-      const content = req.body.content;
-      const postId = req.body.postId;
-      const userId = req.body.userId;
+      const validateCommentSchema = Joi.object({
+        content: Joi.string().required(),
+        postId: Joi.number().required(),
+        userId: Joi.number().required(),
+      });
+      const { err } = validateCommentSchema.validate(req.body);
+      if (err)
+        return res.status(400).send({ message: error.details[0].message });
+      const { content, postId, userId } = req.body;
       const user = await UserModel.findByPk(userId);
       if (!user) {
         return res.status(404).send({ message: "User not found" });
