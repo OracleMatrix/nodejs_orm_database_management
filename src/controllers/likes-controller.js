@@ -6,8 +6,8 @@ const Posts = db.posts;
 const Users = db.users;
 const _ = require("lodash");
 
-const likeController = {
-  createLike: async (req, res) => {
+class LikesController {
+  async createLike(req, res) {
     const schema = Joi.object({
       userId: Joi.number().required(),
       postId: Joi.number().required(),
@@ -54,9 +54,9 @@ const likeController = {
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
-  },
+  }
 
-  getPostLikes: async (req, res) => {
+  async getPostLikes(req, res) {
     const postId = req.params.id;
     if (!postId) {
       return res.status(400).json({ message: "Post ID is required" });
@@ -68,56 +68,44 @@ const likeController = {
         include: [
           {
             model: Users,
-            attributes: ["id", "name", "email"],
+            attributes: { exclude: ["password"] },
           },
         ],
       });
       res.status(200).json({
         message: "Likes retrieved successfully",
         totalLikes: likes.length,
-        likes: likes.map((like) => ({
-          id: like.id,
-          userId: like.userId,
-          postId: like.postId,
-          user: _.pick(like.user, ["id", "name", "email"]),
-        })),
+        likes: likes,
       });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
-  },
+  }
 
-  getAllLikes: async (req, res) => {
+  async getAllLikes(req, res) {
     try {
       const likes = await Likes.findAll({
         include: [
           {
             model: Users,
-            attributes: ["id", "name", "email"],
+            attributes: { exclude: ["password"] },
           },
           {
             model: Posts,
-            attributes: ["id", "title", "content"],
           },
         ],
       });
       res.status(200).json({
         message: "Likes retrieved successfully",
         totalLikes: likes.length,
-        likes: likes.map((like) => ({
-          id: like.id,
-          userId: like.userId,
-          postId: like.postId,
-          user: _.pick(like.user, ["id", "name", "email"]),
-          post: _.pick(like.post, ["id", "title", "content"]),
-        })),
+        likes: likes,
       });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
-  },
+  }
 
-  deleteLike: async (req, res) => {
+  async deleteLike(req, res) {
     const likeId = req.params.id;
     if (!likeId) {
       return res.status(400).json({ message: "Like ID is required" });
@@ -133,7 +121,7 @@ const likeController = {
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
-  },
-};
+  }
+}
 
-module.exports = likeController;
+module.exports = new LikesController();
