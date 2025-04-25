@@ -7,8 +7,8 @@ const CommentModel = db.comments;
 const PostModel = db.posts;
 const UserModel = db.users;
 
-const commentController = {
-  createComment: async (req, res) => {
+class CommentController {
+  async createComment(req, res) {
     try {
       const validateCommentSchema = Joi.object({
         content: Joi.string().required(),
@@ -47,11 +47,10 @@ const commentController = {
         include: [
           {
             model: UserModel,
-            attributes: ["id", "name", "email"],
+            attributes: { exclude: ["password"] },
           },
           {
             model: PostModel,
-            attributes: ["id", "title", "content"],
           },
         ],
       });
@@ -60,13 +59,11 @@ const commentController = {
         comment: commentData,
       });
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
+  }
 
-  getCommentsByPostId: async (req, res) => {
+  async getCommentsByPostId(req, res) {
     try {
       const postId = req.params.postId;
       if (!postId)
@@ -84,11 +81,10 @@ const commentController = {
         include: [
           {
             model: UserModel,
-            attributes: ["id", "name", "email"],
+            attributes: { exclude: ["password"] },
           },
           {
             model: PostModel,
-            attributes: ["id", "title", "content"],
           },
         ],
       });
@@ -98,24 +94,21 @@ const commentController = {
         comments,
       });
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
+  }
 
-  getAllComments: async (req, res) => {
+  async getAllComments(req, res) {
     try {
       const comments = await CommentModel.findAll({
         order: [["createdAt", "DESC"]],
         include: [
           {
             model: UserModel,
-            attributes: ["id", "name", "email"],
+            attributes: { exclude: ["password"] },
           },
           {
             model: PostModel,
-            attributes: ["id", "title", "content"],
           },
         ],
       });
@@ -125,11 +118,9 @@ const commentController = {
         comments,
       });
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
-};
+  }
+}
 
-module.exports = commentController;
+module.exports = new CommentController();
