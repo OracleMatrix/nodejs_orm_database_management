@@ -15,19 +15,19 @@ app.use(express.json());
 app.use(helmet());
 const port = process.env.PORT || 3000;
 
-const usersRoute = require("./routes/users-route");
+const usersRoute = require("./routes/users.route");
 app.use("/api/users", usersRoute);
 
-const authRoute = require("./routes/auth-route");
+const authRoute = require("./routes/auth.route");
 app.use("/api/auth", authRoute);
 
-const commentsRoute = require("./routes/comments-route");
+const commentsRoute = require("./routes/comments.route");
 app.use("/api/comments", commentsRoute);
 
-const postsRoute = require("./routes/posts-route");
+const postsRoute = require("./routes/posts.route");
 app.use("/api/posts", postsRoute);
 
-const likesRoute = require("./routes/likes-route");
+const likesRoute = require("./routes/likes.route");
 app.use("/api/likes", likesRoute);
 
 app.get("/", (req, res) => res.send("Hello World!"));

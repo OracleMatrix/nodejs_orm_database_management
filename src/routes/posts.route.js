@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../middlewares/auth");
-const postsController = require("../controllers/posts-controller");
+const postsController = require("../controllers/posts.controller");
 
 /**
  * @swagger
