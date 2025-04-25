@@ -5,8 +5,8 @@ const _ = require("lodash");
 const db = require("../models");
 const UserModel = db.users;
 
-const userController = {
-  registerUser: async (req, res) => {
+class UserController {
+  async registerUser(req, res) {
     try {
       const schema = Joi.object({
         name: Joi.string().required(),
@@ -16,12 +16,13 @@ const userController = {
       const { error } = schema.validate(req.body);
       if (error)
         return res.status(400).send({ message: error.details[0].message });
-      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+      const { name, email, password } = req.body;
 
       // Check if user already exists
       const existingUser = await UserModel.findOne({
         where: {
-          email: req.body.email,
+          email,
         },
       });
       if (existingUser)
@@ -31,7 +32,7 @@ const userController = {
       const user = await UserModel.create({
         name: req.body.name,
         email: req.body.email,
-        password: hashedPassword,
+        password: password,
       }).catch((err) => {
         return res.status(400).send({ message: err });
       });
@@ -43,13 +44,11 @@ const userController = {
         token: token,
       });
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
+  }
 
-  loginUser: async (req, res) => {
+  async loginUser(req, res) {
     try {
       const schema = Joi.object({
         email: Joi.string().email().required(),
@@ -59,34 +58,34 @@ const userController = {
       if (error)
         return res.status(400).send({ message: error.details[0].message });
 
+      const { email, password } = req.body;
+
       // Check if user exists
       const user = await UserModel.findOne({
         where: {
-          email: req.body.email,
+          email,
         },
       });
       if (!user) return res.status(400).send({ message: "User not found" });
 
       // Check password
-      const isMatch = await bcrypt.compare(req.body.password, user.password);
+      const isMatch = await user.comparePssword(password);
       if (!isMatch)
         return res.status(400).send({ message: "Invalid credentials" });
 
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY);
       const userData = _.pick(user, ["id", "name", "email"]);
-      res.status(200).send({
+      res.status(200).json({
         message: "User logged in successfully",
         user: userData,
         token: token,
       });
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
+  }
 
-  updateUser: async (req, res) => {
+  async updateUser(req, res) {
     try {
       const userId = req.params.id;
       if (!userId)
@@ -101,31 +100,28 @@ const userController = {
       if (error)
         return res.status(400).send({ message: error.details[0].message });
 
-      // Check if user exists
-      const user = await UserModel.findByPk(req.params.id);
-      if (!user) return res.status(400).send({ message: "User not found" });
+      const { name, email, password } = req.body;
 
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(req.body.password, salt);
+      // Check if user exists
+      const user = await UserModel.findByPk(userId);
+      if (!user) return res.status(400).send({ message: "User not found" });
 
       // Update user
       await UserModel.update(
         {
-          name: req.body.name,
-          email: req.body.email,
-          password: hashedPassword,
+          name: name,
+          email: email,
+          password: password,
         },
-        { where: { id: req.params.id } }
+        { where: { id: userId } }
       );
       res.status(200).send({ message: "User updated successfully" });
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
+  }
 
-  deleteUser: async (req, res) => {
+  async deleteUser(req, res) {
     try {
       // Check if user exists
       const user = await UserModel.findByPk(req.params.id);
@@ -135,63 +131,55 @@ const userController = {
       await UserModel.destroy({ where: { id: req.params.id } });
       res.status(200).send({ message: "User deleted successfully" });
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
+  }
 
-  getAllUsers: async (req, res) => {
+  async getAllUsers(req, res) {
     try {
-      const users = await UserModel.findAll();
-      res.status(200).send(
-        users.map((user) => {
-          return _.pick(user, ["id", "name", "email", "password"]);
-        })
-      );
+      const users = await UserModel.findAll({
+        attributes: { exclude: ["password"] },
+      });
+      res.status(200).json(users);
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
-  getUserById: async (req, res) => {
+  }
+  async getUserById(req, res) {
     try {
-      const user = await UserModel.findByPk(req.params.id);
+      const user = await UserModel.findByPk(req.params.id, {
+        attributes: { exclude: ["password"] },
+      });
       if (!user) return res.status(400).send({ message: "User not found" });
-      res.status(200).send(_.pick(user, ["id", "name", "email", "password"]));
+      res.status(200).send(user);
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
-  getUserByEmail: async (req, res) => {
+  }
+  async getUserByEmail(req, res) {
     try {
       const user = await UserModel.findOne({
         where: { email: req.params.email },
+        attributes: { exclude: ["password"] },
       });
       if (!user) return res.status(400).send({ message: "User not found" });
-      res.status(200).send(_.pick(user, ["id", "name", "email"]));
+      res.status(200).send(user);
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
-  getUserByName: async (req, res) => {
+  }
+  async getUserByName(req, res) {
     try {
       const user = await UserModel.findOne({
         where: { name: req.params.name },
+        attributes: { exclude: ["password"] },
       });
       if (!user) return res.status(400).send({ message: "User not found" });
-      res.status(200).send(_.pick(user, ["id", "name", "email"]));
+      res.status(200).send(user);
     } catch (error) {
-      res
-        .status(500)
-        .send({ message: `Internal Server Error\nError: ${error}` });
+      res.status(500).send({ message: `Internal Server ${error}` });
     }
-  },
-};
+  }
+}
 
-module.exports = userController;
+module.exports = new UserController();
