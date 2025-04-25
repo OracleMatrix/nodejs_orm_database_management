@@ -30,11 +30,11 @@ class UserController {
 
       // Create new user
       const user = await UserModel.create({
-        name: req.body.name,
-        email: req.body.email,
+        name: name,
+        email: email,
         password: password,
       }).catch((err) => {
-        return res.status(400).send({ message: err });
+        return res.status(400).send({ message: err.errors[0].message });
       });
       const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET_KEY);
       const userData = _.pick(user, ["id", "name", "email"]);
