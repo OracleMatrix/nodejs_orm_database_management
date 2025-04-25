@@ -1,18 +1,74 @@
-module.exports = (sequelize, DataTypes) => {
-  const UserModel = sequelize.define("users", {
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
+const { Model, DataTypes } = require("sequelize");
+
+module.exports = (sequelize) => {
+  class UserModel extends Model {
+    static associate(models) {
+      UserModel.hasMany(models.posts, {
+        foreignKey: "userId",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      });
+      UserModel.hasMany(models.comments, {
+        foreignKey: "userId",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      });
+      UserModel.hasMany(models.likes, {
+        foreignKey: "userId",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
+      });
+    }
+    async comparePssword(password) {
+      const bcrypt = require("bcrypt");
+      return await bcrypt.compare(password, this.password);
+    }
+  }
+
+  UserModel.init(
+    {
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          isAlpha: true,
+        },
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+          isEmail: true,
+        },
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          isAlphanumeric: true,
+          len: [6, 20],
+        },
+      },
     },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  });
+    {
+      sequelize,
+      modelName: "users",
+      hooks: {
+        beforeCreate: async (user) => {
+          const bcrypt = require("bcrypt");
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(user.password, salt);
+        },
+        beforeSave: async (user) => {
+          const bcrypt = require("bcrypt");
+          if (user.changed("password")) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(user.password, salt);
+          }
+        },
+      },
+    }
+  );
   return UserModel;
 };
